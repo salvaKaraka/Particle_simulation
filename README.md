@@ -102,7 +102,7 @@ The Collision Handler consists of two main functions: **handleBorderCollisions**
         ```
     
     The **handleParticleCollisions** function detects collisions between individual particles. If two particles collide, the new velocity of each particle is calculated using the laws of conservation of momentum and energy. Additionally, a damping factor is applied to model the energy loss in the collision.
-
+```cpp
             void CollisionHandler::handleParticleCollisions(Particle& p1, Particle& p2) {
 
                 // variable declarations
@@ -133,9 +133,9 @@ The Collision Handler consists of two main functions: **handleBorderCollisions**
                     }
                 }
             }
-
+```
    * **Position Update:** The **updatePositions** function is responsible for updating the positions of the particles at each simulation step. First, it updates the properties of each particle, such as velocity and position, according to external forces like gravity. Then, using the previously mentioned functions, it checks for collisions with the boundaries and between the particles themselves, adjusting positions and velocities accordingly.
-
+```cpp
         void CollisionHandler::updatePositions() {
             for (Particle& p : particles) {
         
@@ -155,14 +155,15 @@ The Collision Handler consists of two main functions: **handleBorderCollisions**
                 }
         
                 p.draw();
-            }}
-           
+            }}           
+```
 
    * **Other functions:** In addition to the main functions, the Collision Handler includes auxiliary functions to calculate distances, dot products, and normalize vectors. These functions are used in the computation of collisions between particles. you can check them out **[Here](https://github.com/salvaKaraka/Particle_simulation).**  
 
 
 * **Entry Point *(main function)*:** This is where all the parts come together. After the initialization is done, the main function executes the main loop, where the simulation occurs.
 
+```cpp
         int main() {
             // GLFW initialization
             // ...
@@ -196,8 +197,9 @@ The Collision Handler consists of two main functions: **handleBorderCollisions**
             // GLFW Termination
             // ...
         }
+```
 
-    In this code snippet, a main loop is created that runs until a window close request is detected. During each iteration of the loop, user input is processed, the scene is rendered, particle positions are updated through the Collision Handler, and GLFW events are managed.
+In this code snippet, a main loop is created that runs until a window close request is detected. During each iteration of the loop, user input is processed, the scene is rendered, particle positions are updated through the Collision Handler, and GLFW events are managed.
 
 ## Things to improve:
 Even though the program works fine, there are many things that could get better, such as the collision detection and handling algorithm. The current algorithm has a cost of O(n^2), which is far from optimal. 
