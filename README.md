@@ -40,7 +40,7 @@ It has the following attributes:
 * **The graphics pipeline**:  
 OpenGL uses a resterization pipeline to go from an array of vertices specified within the program to an image on the screen:
 
-![graphics_pipeline]([/blog-images/Particle_simulation/graphics-pipeline.png](https://www.researchgate.net/publication/235696712/figure/fig1/AS:299742132228097@1448475501091/The-graphics-pipeline-in-OpenGL-consists-of-these-5-steps-in-the-new-generation-of-cards.png))
+![graphics_pipeline](https://www.researchgate.net/publication/235696712/figure/fig1/AS:299742132228097@1448475501091/The-graphics-pipeline-in-OpenGL-consists-of-these-5-steps-in-the-new-generation-of-cards.png)
    1. **Vertex Shader:** *Takes the vertex information and transforms it if necessary (for example, to apply perspective).*
    2. **Shape Assembly:** *Takes the resulting positions from applying the vertex shader and connects them according to a primitive *(point, line or polygon)*. In this case, *triangles*.*
    3. **Rasterization:** *The shapes generated previously are translated into pixels that can be displayed on the screen.*
@@ -50,7 +50,7 @@ OpenGL uses a resterization pipeline to go from an array of vertices specified w
 * **Particle rendering:**  
  Now that we understand how OpenGL works, we can delve into the details of how I managed to **show the particles on the screen**. In this case, I used **triangular primitives** to render my circular particles. To achieve this, I **divided the circle into segments**, similar to slicing a pizza, **placing vertices along its perimeter and drawing triangles between them and the central point**, the **more vertices** we add, the **better resolution** the circle has: 
 
-![circle_drawing]([/blog-images/Particle_simulation/circle_drawing.PNG](https://i.stack.imgur.com/NXQbJ.png))
+![circle_drawing](https://i.stack.imgur.com/NXQbJ.png)
 
 To do so, I first had to **calculate the position of each vertex and store it into an array**:
 
