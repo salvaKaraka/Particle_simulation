@@ -40,7 +40,7 @@ It has the following attributes:
 * **The graphics pipeline**:  
 OpenGL uses a resterization pipeline to go from an array of vertices specified within the program to an image on the screen:
 
-![graphics_pipeline](https://www.researchgate.net/profile/Christoph-Guetter/publication/235696712/figure/fig1/AS:299742132228097@1448475501091/The-graphics-pipeline-in-OpenGL-consists-of-these-5-steps-in-the-new-generation-of-cards.png)
+![graphics_pipeline](https://graphicscompendium.com/intro/figures/graphics-pipeline.png)
    1. **Vertex Shader:** *Takes the vertex information and transforms it if necessary (for example, to apply perspective).*
    2. **Shape Assembly:** *Takes the resulting positions from applying the vertex shader and connects them according to a primitive *(point, line or polygon)*. In this case, *triangles*.*
    3. **Rasterization:** *The shapes generated previously are translated into pixels that can be displayed on the screen.*
