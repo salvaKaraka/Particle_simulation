@@ -29,19 +29,19 @@ public:
     void setColor(std::array<float, 3> c);
     void setMass(float m);
 
-    std::array<float, 2> getPosition();
-    std::array<float, 2> getNextPosition();
-    float getXPosition();
-    float getYPosition();
-    std::array<float, 2> getVelocity();
-    float getXVelocity();
-    float getYVelocity();
-    std::array<float, 2> getAcceleration();
-    float getXAcceleration();
-    float getYAcceleration();
-    std::array<float, 3> getColor();
-    float getRadius();
-    float getMass();
+    const std::array<float, 2> getPosition();
+    const std::array<float, 2> getNextPosition();
+    const float getXPosition();
+    const float getYPosition();
+    const std::array<float, 2> getVelocity();
+    const float getXVelocity();
+    const float getYVelocity();
+    const std::array<float, 2> getAcceleration();
+    const float getXAcceleration();
+    const float getYAcceleration();
+    const std::array<float, 3> getColor();
+    const float getRadius();
+    const float getMass();
 
     void draw(); //it showld not be here but for the sake of simplicity we will leave it here for now
 };

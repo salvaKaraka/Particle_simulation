@@ -64,55 +64,55 @@ void Particle::setMass(float m) {
     mass = m;
 }
 
-std::array<float, 2> Particle::getPosition() {
+const std::array<float, 2> Particle::getPosition() {
     return pos;
 }
 
-std::array<float, 2> Particle::getNextPosition() {
+const std::array<float, 2> Particle::getNextPosition() {
     return nextPos;
 }
 
-float Particle::getXPosition() {
+const float Particle::getXPosition() {
     return pos[0];
 }
 
-float Particle::getYPosition() {
+const float Particle::getYPosition() {
     return pos[1];
 }
 
-std::array<float, 2> Particle::getVelocity() {
+const std::array<float, 2> Particle::getVelocity() {
     return vel;
 }
 
-float Particle::getXVelocity() {
+const float Particle::getXVelocity() {
     return vel[0];
 }
 
-float Particle::getYVelocity() {
+const float Particle::getYVelocity() {
     return vel[1];
 }
 
-std::array<float, 2> Particle::getAcceleration() {
+const std::array<float, 2> Particle::getAcceleration() {
     return acc;
 }
 
-float Particle::getXAcceleration() {
+const float Particle::getXAcceleration() {
     return acc[0];
 }
 
-float Particle::getYAcceleration() {
+const float Particle::getYAcceleration() {
     return acc[1];
 }
 
-std::array<float, 3> Particle::getColor() {
+const std::array<float, 3> Particle::getColor() {
     return color;
 }
 
-float Particle::getMass() {
+const float Particle::getMass() {
     return mass;
 }
 
-float Particle::getRadius() {
+const float Particle::getRadius() {
     return radius;
 }
 
