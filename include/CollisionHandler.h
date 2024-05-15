@@ -13,11 +13,11 @@ private:
 	int height;
 	float dt;
 	float gravity;
-	float dotProduct(const std::vector<float>& v1, const std::vector<float>& v2);
+	float dotProduct(const std::array<float, 2>& v1, const std::array<float, 2>& v2);
 	float calculateDistance(Particle p1, Particle p2);
 	bool collide(Particle p1, Particle p2);
 	int sign(float i);
-	std::vector<float> normalize(const std::vector<float>& vec);
+	std::array<float, 2> normalize(const std::array<float, 2>& vec);
 public:
 	CollisionHandler(std::vector<Particle> p, int w, int h, float t, float g);
 	void updatePositions();

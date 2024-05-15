@@ -44,7 +44,7 @@ int main() {
     //Paricles
     srand(time(nullptr));
     std::vector<Particle> particles;
-    const int numParticles = 30;
+    const int numParticles = 69;
 
     // Ranges
     const float positionRange = 2.0f; 

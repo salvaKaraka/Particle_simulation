@@ -1,7 +1,7 @@
 #include "CollisionHandler.h"
 
 const float borderCollisionDamping = 0.9;
-const float particleCollisionDamping = .95;
+const float particleCollisionDamping = .9999;
 
 
 CollisionHandler::CollisionHandler(std::vector<Particle> p, int w, int h, float t, float g) {
@@ -39,8 +39,8 @@ void CollisionHandler::updatePositions() {
 }
 
 void CollisionHandler::handleBorderCollisions(Particle& p) {
-    std::vector<float> velocity = p.getVelocity();
-    std::vector<float> position = p.getPosition();
+    std::array<float, 2> velocity = p.getVelocity();
+    std::array<float, 2> position = p.getPosition();
 
     //chack leeft and right
     if (abs(p.getXPosition()) + p.getRadius() > width/2) {
@@ -75,7 +75,7 @@ void CollisionHandler::handleParticleCollisions(Particle& p1, Particle& p2) {
     if (&p1 != &p2) { // Evitar comparar una partícula consigo misma
         if (collide(p1, p2)) {
             // Calcular la diferencia entre las posiciones
-            std::vector<float> diff_x(2);
+            std::array<float, 2> diff_x;
             diff_x[0] = xp1 - xp2;
             diff_x[1] = yp1 - yp2;
 
@@ -113,7 +113,7 @@ float CollisionHandler::calculateDistance(Particle p1, Particle p2) {
 }
 
 
-float CollisionHandler::dotProduct(const std::vector<float>& v1, const std::vector<float>& v2) {
+float CollisionHandler::dotProduct(const std::array<float, 2>& v1, const std::array<float, 2>& v2) {
     return v1[0] * v2[0] + v1[1] * v2[1];
 }
 
@@ -125,7 +125,7 @@ int CollisionHandler::sign(float i) {
     }
 }
 
-std::vector<float> CollisionHandler::normalize(const std::vector<float>& vec) {
+std::array<float, 2> CollisionHandler::normalize(const std::array<float, 2>& vec) {
     float magnitude = sqrt(vec[0] * vec[0] + vec[1] * vec[1]);
     if (magnitude != 0) {
         return { vec[0] / magnitude, vec[1] / magnitude };
