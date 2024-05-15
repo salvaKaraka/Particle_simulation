@@ -2,6 +2,8 @@
 #define  COLLISIONHANDLER_H
 
 #include "Particle.h"
+#include <vector>
+#include <array>
 
 class CollisionHandler
 {
