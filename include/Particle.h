@@ -1,49 +1,49 @@
 #ifndef PARTICLE_H
 #define PARTICLE_H
 
-#include <vector>
+#include <array>
 
 class Particle {
 private:
-    std::vector<float> pos;
-    std::vector<float> nextPos;
+    std::array<float, 2> pos;
+    std::array<float, 2> nextPos;
     float mass;
     float radius;
-    std::vector<float> vel;
-    std::vector<float> acc;
-    std::vector<float> color;
+    std::array<float, 2> vel;
+    std::array<float, 2> acc;
+    std::array<float, 3> color;
 
 public:
-    Particle(std::vector<float> p, float m, std::vector<float> c, std::vector<float> v, std::vector<float> a);
+    Particle(std::array<float, 2> p, float m, std::array<float, 3> c, std::array<float, 2> v, std::array<float, 2> a);
 
-    void setPosition(std::vector<float> p);
-    void setNextPosition(std::vector<float> np);
+    void setPosition(std::array<float, 2> p);
+    void setNextPosition(std::array<float, 2> np);
     void setXPosition(float x);
     void setYPosition(float y);
-    void setVelocity(std::vector<float> v);
+    void setVelocity(std::array<float, 2> v);
     void setXVelocity(float vx);
     void setYVelocity(float vy);
-    void setAcceleration(std::vector<float> a);
+    void setAcceleration(std::array<float, 2> a);
     void setXAcceleration(float ax);
     void setYAcceleration(float ay);
-    void setColor(std::vector<float> c);
+    void setColor(std::array<float, 3> c);
     void setMass(float m);
 
-    std::vector<float> getPosition();
-    std::vector<float> getNextPosition();
+    std::array<float, 2> getPosition();
+    std::array<float, 2> getNextPosition();
     float getXPosition();
     float getYPosition();
-    std::vector<float> getVelocity();
+    std::array<float, 2> getVelocity();
     float getXVelocity();
     float getYVelocity();
-    std::vector<float> getAcceleration();
+    std::array<float, 2> getAcceleration();
     float getXAcceleration();
     float getYAcceleration();
-    std::vector<float> getColor();
+    std::array<float, 3> getColor();
     float getRadius();
     float getMass();
 
-    void draw();
+    void draw(); //it showld not be here but for the sake of simplicity we will leave it here for now
 };
 
 #endif

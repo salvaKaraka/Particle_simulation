@@ -8,8 +8,8 @@
 
 
 //Settings
-const unsigned int SCR_WIDTH = 1000;
-const unsigned int SCR_HEIGHT = 1000;
+const unsigned int SCR_WIDTH = 800;
+const unsigned int SCR_HEIGHT = 800;
 
 void processInput(GLFWwindow* window, CollisionHandler& handler, std::vector<Particle>& particlesRestore);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -93,7 +93,6 @@ int main() {
     }
 
     glfwTerminate();
-    return 0;
 }
 
 

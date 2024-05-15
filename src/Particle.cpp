@@ -1,12 +1,12 @@
 #include "Particle.h"
-#include <vector>
 #include <math.h>
 #include <glad/glad.h>
+#include <vector>
 
 const int steps = 24;
 const float angle = 3.1415926 * 2.f / steps;
 
-Particle::Particle(std::vector<float> p, float m, std::vector<float> c, std::vector<float> v, std::vector<float> a) {
+Particle::Particle(std::array<float, 2> p, float m, std::array<float, 3> c, std::array<float, 2> v, std::array<float, 2> a) {
     pos = p;
     nextPos = p;
     mass = m;
@@ -16,11 +16,11 @@ Particle::Particle(std::vector<float> p, float m, std::vector<float> c, std::vec
     radius = mass / 300;
 }
 
-void Particle::setPosition(std::vector<float> p) {
+void Particle::setPosition(std::array<float, 2> p) {
     pos = p;
 }
 
-void Particle::setNextPosition(std::vector<float> np) {
+void Particle::setNextPosition(std::array<float, 2> np) {
     nextPos = np;
 }
 
@@ -32,7 +32,7 @@ void Particle::setYPosition(float y) {
     pos[1] = y;
 }
 
-void Particle::setVelocity(std::vector<float> v) {
+void Particle::setVelocity(std::array<float, 2> v) {
     vel = v;
 }
 
@@ -44,7 +44,7 @@ void Particle::setYVelocity(float vy) {
     vel[1] = vy;
 }
 
-void Particle::setAcceleration(std::vector<float> a) {
+void Particle::setAcceleration(std::array<float, 2> a) {
     acc = a;
 }
 
@@ -56,7 +56,7 @@ void Particle::setYAcceleration(float ay) {
     acc[1] = ay;
 }
 
-void Particle::setColor(std::vector<float> c) {
+void Particle::setColor(std::array<float, 3> c) {
     color = c;
 }
 
@@ -64,11 +64,11 @@ void Particle::setMass(float m) {
     mass = m;
 }
 
-std::vector<float> Particle::getPosition() {
+std::array<float, 2> Particle::getPosition() {
     return pos;
 }
 
-std::vector<float> Particle::getNextPosition() {
+std::array<float, 2> Particle::getNextPosition() {
     return nextPos;
 }
 
@@ -80,7 +80,7 @@ float Particle::getYPosition() {
     return pos[1];
 }
 
-std::vector<float> Particle::getVelocity() {
+std::array<float, 2> Particle::getVelocity() {
     return vel;
 }
 
@@ -92,7 +92,7 @@ float Particle::getYVelocity() {
     return vel[1];
 }
 
-std::vector<float> Particle::getAcceleration() {
+std::array<float, 2> Particle::getAcceleration() {
     return acc;
 }
 
@@ -104,7 +104,7 @@ float Particle::getYAcceleration() {
     return acc[1];
 }
 
-std::vector<float> Particle::getColor() {
+std::array<float, 3> Particle::getColor() {
     return color;
 }
 
