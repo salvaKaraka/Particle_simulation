@@ -4,7 +4,8 @@
 **Computer graphics** is a fascinating field of computer science. Who would have thought that, with just a couple of functions and basic physics principles, we could create fairly accurate **simulations of real-world natural systems**? I'm by no means an expert in this field, but I would like to become one in the future.  
 This is my first attempt at graphics programming using **OpenGL**. I hope you find this article useful or interesting, at least. **Enjoy!** [Source code](https://github.com/salvaKaraka/Particle_simulation).
 
-![Particles](https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExbnIzdjR6MWEwazgyeHZranV6dHNiYXZzMTNjb29qcW03dWI3YnNpNiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/Szu98O1hHYdhirAxIc/giphy.gif)
+![image](https://github.com/salvaKaraka/Particle_simulation/assets/100873582/9c69c97f-aca4-4ce1-a581-c920b9253322)
+
 
 ## What is this project about?
 
