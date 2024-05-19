@@ -5,10 +5,10 @@ const float particleCollisionDamping = 0.9999;
 
 
 CollisionHandler::CollisionHandler(std::vector<Particle> p, int w, int h, float t, float g) {
-	particles = p;
-	width = w;
-	height = h;
-	dt = t;
+    particles = p;
+    width = w;
+    height = h;
+    dt = t;
     gravity = g;
 }
 
@@ -42,19 +42,19 @@ void CollisionHandler::handleBorderCollisions(Particle& p) {
     std::array<float, 2> position = p.pos;
 
     //chack leeft and right
-    if (abs(p.pos[0]) + p.radius > float(width)/2) {
-        position[0] = (float(width)/2 - p.radius) * sign(position[0]);
-        velocity[0]*=-1 * borderCollisionDamping; // Reverse velocity and slow down
+    if (abs(p.pos[0]) + p.radius > float(width) / 2) {
+        position[0] = (float(width) / 2 - p.radius) * sign(position[0]);
+        velocity[0] *= -1 * borderCollisionDamping; // Reverse velocity and slow down
     }
     //chack top and bottom
-    if (abs(p.pos[1]) + p.radius > height/2) {
-        position[1] = (float(height)/2 - p.radius) * sign(position[1]);
+    if (abs(p.pos[1]) + p.radius > height / 2) {
+        position[1] = (float(height) / 2 - p.radius) * sign(position[1]);
         velocity[1] *= -1 * borderCollisionDamping;
     }
 
 
-    p.pos=position;
-    p.vel=velocity;
+    p.pos = position;
+    p.vel = velocity;
 }
 
 void CollisionHandler::handleParticleCollisions(Particle& p1, Particle& p2) {
@@ -85,14 +85,14 @@ void CollisionHandler::handleParticleCollisions(Particle& p1, Particle& p2) {
             float norm_squared = diff_x[0] * diff_x[0] + diff_x[1] * diff_x[1];
 
             // Calcular la componente a componente de la fórmula
-            float new_xv1 = (xv1 - (2 * m2 / (m1 + m2)) * dot_product / norm_squared * diff_x[0])* particleCollisionDamping;
+            float new_xv1 = (xv1 - (2 * m2 / (m1 + m2)) * dot_product / norm_squared * diff_x[0]) * particleCollisionDamping;
             float new_yv1 = (yv1 - (2 * m2 / (m1 + m2)) * dot_product / norm_squared * diff_x[1]) * particleCollisionDamping;
 
             // Actualizar la velocidad de la partícula p1
-            p1.vel={ new_xv1, new_yv1 };
-            p1.pos={
-                xp1 - (p2.pos[0] - p1.pos[0])/10,
-                yp1 - (p2.pos[1] - p1.pos[1])/10
+            p1.vel = { new_xv1, new_yv1 };
+            p1.pos = {
+                xp1 - (p2.pos[0] - p1.pos[0]) / 10,
+                yp1 - (p2.pos[1] - p1.pos[1]) / 10
             };
         }
     }
@@ -134,6 +134,6 @@ std::array<float, 2> CollisionHandler::normalize(const std::array<float, 2>& vec
     }
 }
 
-std::vector<Particle> CollisionHandler::getParticles() const{
+std::vector<Particle> CollisionHandler::getParticles() const {
     return particles;
 }

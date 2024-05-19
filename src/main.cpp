@@ -50,9 +50,9 @@ int main() {
     const int numParticles = 3500;
 
     // Ranges
-    const float positionRange = 2.0f; 
-    const float velocityRange = 5.0f; 
-    const float massRange = 5.0f;  
+    const float positionRange = 2.0f;
+    const float velocityRange = 5.0f;
+    const float massRange = 5.0f;
     const float colorRange = 1.f;
 
     for (int i = 0; i < numParticles; ++i) {
@@ -147,6 +147,39 @@ void processInput(GLFWwindow* window, CollisionHandler& handler, std::vector<Par
         glfwSetWindowShouldClose(window, true);
     if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
         handler.setParticles(particlesRestore);
+    if (glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS) {
+        std::vector<Particle> particles;
+        const int numParticles = 3500;
+
+        // Ranges
+        const float positionRange = 2.0f;
+        const float velocityRange = 5.0f;
+        const float massRange = 5.0f;
+        const float colorRange = 1.f;
+
+        for (int i = 0; i < numParticles; ++i) {
+            //Position
+            float xPos = static_cast<float>(rand()) / RAND_MAX * positionRange - positionRange / 2;
+            float yPos = static_cast<float>(rand()) / RAND_MAX * positionRange - positionRange / 2;
+
+            //Veelocity
+            float xVel = static_cast<float>(rand()) / RAND_MAX * velocityRange - velocityRange / 2;
+            float yVel = static_cast<float>(rand()) / RAND_MAX * velocityRange - velocityRange / 2;
+
+            //Mass
+            //float mass = static_cast<float>(rand()) / RAND_MAX * massRange + 1.f; // Aseguramos que la masa sea mayor que 1
+            float mass = 4.f;
+            //color
+            float red = 0.01f + (static_cast<float>(rand()) / RAND_MAX);
+            float green = 0.01f + (static_cast<float>(rand()) / RAND_MAX);
+            float blue = 0.01f + (static_cast<float>(rand()) / RAND_MAX);
+
+            // Creamos la partícula y la agregamos al vector
+            Particle particle({ xPos, yPos }, RADIUS, { red, green, blue }, { xVel, yVel }, { 0.0f, 0.0f });
+            particles.push_back(particle);
+        }
+        handler.setParticles(particles);
+    }
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
