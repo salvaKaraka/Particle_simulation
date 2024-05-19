@@ -24,6 +24,7 @@ public:
 	void handleParticleCollisions(Particle& p1, Particle& p2);
 	void handleBorderCollisions(Particle& p);
 	void setParticles(std::vector<Particle> p);
+	std::vector<Particle> getParticles() const;
 };
 
 #endif

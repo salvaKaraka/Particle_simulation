@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Archivos de recursos\Shaders">
+      <UniqueIdentifier>{fc501955-a5b1-43b1-9119-8ceedd0d1a60}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -27,6 +30,9 @@
     <ClCompile Include="src\CollisionHandler.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
+    <ClCompile Include="src\ShaderProgram.cpp">
+      <Filter>Archivos de origen</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Particle.h">
@@ -35,5 +41,16 @@
     <ClInclude Include="include\CollisionHandler.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
+    <ClInclude Include="include\ShaderProgram.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\fragment.glsl">
+      <Filter>Archivos de recursos\Shaders</Filter>
+    </None>
+    <None Include="Shaders\vertex.glsl">
+      <Filter>Archivos de recursos\Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

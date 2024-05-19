@@ -143,10 +143,16 @@
     <ClCompile Include="Dependencies\glad.c" />
     <ClCompile Include="src\Particle.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\ShaderProgram.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\CollisionHandler.h" />
     <ClInclude Include="include\Particle.h" />
+    <ClInclude Include="include\ShaderProgram.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\fragment.glsl" />
+    <None Include="Shaders\vertex.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
