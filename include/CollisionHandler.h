@@ -25,6 +25,7 @@ public:
 	void handleBorderCollisions(Particle& p);
 	void setParticles(std::vector<Particle> p);
 	std::vector<Particle> getParticles() const;
+	void changeGravity();
 };
 
 #endif

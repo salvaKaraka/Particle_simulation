@@ -12,12 +12,12 @@
 
 
 //Settings
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 800;
+const unsigned int SCR_WIDTH =1000;
+const unsigned int SCR_HEIGHT = 1000;
 
-const float RADIUS = 0.004f;
+const float RADIUS = 0.006f;
 const float PI = 3.14159265359f;
-const unsigned int STEPS = 20;
+const unsigned int STEPS = 10;
 const float ANGLE = PI * 2.f / STEPS;
 
 void processInput(GLFWwindow* window, CollisionHandler& handler, std::vector<Particle>& particlesRestore);
@@ -53,7 +53,6 @@ int main() {
     const float positionRange = 2.0f;
     const float velocityRange = 5.0f;
     const float massRange = 5.0f;
-    const float colorRange = 1.f;
 
     for (int i = 0; i < numParticles; ++i) {
         //Position
@@ -73,7 +72,7 @@ int main() {
         float blue = 0.01f + (static_cast<float>(rand()) / RAND_MAX);
 
         // Creamos la partícula y la agregamos al vector
-        Particle particle({ xPos, yPos }, RADIUS, { red, green, blue }, { xVel, yVel }, { 0.0f, 0.0f });
+        Particle particle({ xPos, yPos }, RADIUS, { 0.f, 0.f, 0.f }, { xVel, yVel }, { 0.0f, 0.0f });
         particles.push_back(particle);
     }
     std::vector<Particle> particlesRestore = particles;
@@ -112,7 +111,7 @@ int main() {
         processInput(window, handler, particlesRestore);
 
         //Rendering
-        glClearColor(0.f, 0.f, 0.f, 0);  //BG color
+        glClearColor(0.05f, 0.05f, 0.05f, 0);  //BG color
         glClear(GL_COLOR_BUFFER_BIT);
 
         handler.updatePositions();
@@ -125,7 +124,9 @@ int main() {
         GLint color_location = glGetUniformLocation(shaderProgram.GetID(), "color");							//obtengo la ubicacion de la variable uniforme "color"
 
         for (Particle& p : handler.getParticles()) {
-            glUniform4fv(color_location, 1, p.color.data());														//le paso el color al shader
+            std::array<float, 3> color = p.color;
+            color = { abs(p.vel[0]+p.vel[1]), 0.3f, 0.3f };																		//cambio el color a blanco para que no se vean las particulas
+            glUniform4fv(color_location, 1, color.data());														//le paso el color al shader
 
             glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(p.pos[0], p.pos[1], 0.0f));		//aplico transformacion de traslacion
             glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(translationMatrix)); 						//le paso la matriz de transformacion al shader
@@ -145,6 +146,8 @@ void processInput(GLFWwindow* window, CollisionHandler& handler, std::vector<Par
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+        handler.changeGravity();
     if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
         handler.setParticles(particlesRestore);
     if (glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS) {

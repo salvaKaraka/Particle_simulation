@@ -137,3 +137,7 @@ std::array<float, 2> CollisionHandler::normalize(const std::array<float, 2>& vec
 std::vector<Particle> CollisionHandler::getParticles() const {
     return particles;
 }
+
+void CollisionHandler::changeGravity() {
+	gravity = -gravity;
+}
