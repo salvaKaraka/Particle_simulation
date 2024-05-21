@@ -4,12 +4,11 @@ const float borderCollisionDamping = 0.9;
 const float particleCollisionDamping = 0.9999;
 
 
-CollisionHandler::CollisionHandler(std::vector<Particle> p, int w, int h, float t, float g) {
+CollisionHandler::CollisionHandler(std::vector<Particle> p, int w, int h, float t) {
     particles = p;
     width = w;
     height = h;
     dt = t;
-    gravity = g;
 }
 
 void CollisionHandler::setParticles(std::vector<Particle> p) {
@@ -20,8 +19,8 @@ void CollisionHandler::updatePositions() {
     for (Particle& p : particles) {
 
         // Update particle properties
-        p.vel[0] += p.acc[0] * dt;
-        p.vel[1] += p.acc[1] * dt - gravity * dt;
+        p.vel[0] += p.acc[0] * dt + gravity[0] * dt;
+        p.vel[1] += p.acc[1] * dt + gravity[1] * dt;
 
         p.pos[0] += p.vel[0] * dt;
         p.pos[1] += p.vel[1] * dt;
@@ -138,6 +137,22 @@ std::vector<Particle> CollisionHandler::getParticles() const {
     return particles;
 }
 
-void CollisionHandler::changeGravity() {
-	gravity = -gravity;
+void CollisionHandler::changeGravity(char a) {
+    switch (a)
+    {
+		case 'u':
+            gravity = {0.0f , 9.8f};
+			break;
+		case 'r':
+			gravity = { -9.8f , 0.0f};
+			break;
+		case 'd':
+            gravity = { 0.0f , -9.8f };
+			break;
+		case 'l':
+            gravity = { 9.8f , 0.0f };
+			break;
+		default:
+			break;
+    }
 }

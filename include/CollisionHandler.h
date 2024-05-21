@@ -12,20 +12,20 @@ private:
 	int width;
 	int height;
 	float dt;
-	float gravity;
+	std::array<float, 2> gravity = {0.0f};
 	float dotProduct(const std::array<float, 2>& v1, const std::array<float, 2>& v2);
 	float calculateDistance(Particle p1, Particle p2);
 	bool collide(Particle p1, Particle p2);
 	int sign(float i);
 	std::array<float, 2> normalize(const std::array<float, 2>& vec);
 public:
-	CollisionHandler(std::vector<Particle> p, int w, int h, float t, float g);
+	CollisionHandler(std::vector<Particle> p, int w, int h, float t);
 	void updatePositions();
 	void handleParticleCollisions(Particle& p1, Particle& p2);
 	void handleBorderCollisions(Particle& p);
 	void setParticles(std::vector<Particle> p);
 	std::vector<Particle> getParticles() const;
-	void changeGravity();
+	void changeGravity(char a);
 };
 
 #endif

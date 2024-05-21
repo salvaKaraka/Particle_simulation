@@ -20,7 +20,13 @@ const float PI = 3.14159265359f;
 const unsigned int STEPS = 10;
 const float ANGLE = PI * 2.f / STEPS;
 
+const float positionRange = 2.0f;
+const float velocityRange = 5.0f;
+const float massRange = 5.0f;
+const int numParticles = 3500;
+
 void processInput(GLFWwindow* window, CollisionHandler& handler, std::vector<Particle>& particlesRestore);
+static std::vector<Particle> createParticles(int numParticles, float positionRange, float velocityRange);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
 int main() {
@@ -46,39 +52,13 @@ int main() {
 
     //Paricles
     srand(time(nullptr));
-    std::vector<Particle> particles;
-    const int numParticles = 3500;
-
-    // Ranges
-    const float positionRange = 2.0f;
-    const float velocityRange = 5.0f;
-    const float massRange = 5.0f;
-
-    for (int i = 0; i < numParticles; ++i) {
-        //Position
-        float xPos = static_cast<float>(rand()) / RAND_MAX * positionRange - positionRange / 2;
-        float yPos = static_cast<float>(rand()) / RAND_MAX * positionRange - positionRange / 2;
-
-        //Veelocity
-        float xVel = static_cast<float>(rand()) / RAND_MAX * velocityRange - velocityRange / 2;
-        float yVel = static_cast<float>(rand()) / RAND_MAX * velocityRange - velocityRange / 2;
-
-        //Mass
-        //float mass = static_cast<float>(rand()) / RAND_MAX * massRange + 1.f; // Aseguramos que la masa sea mayor que 1
-        float mass = 4.f;
-        //color
-        float red = 0.01f + (static_cast<float>(rand()) / RAND_MAX);
-        float green = 0.01f + (static_cast<float>(rand()) / RAND_MAX);
-        float blue = 0.01f + (static_cast<float>(rand()) / RAND_MAX);
-
-        // Creamos la partícula y la agregamos al vector
-        Particle particle({ xPos, yPos }, RADIUS, { 0.f, 0.f, 0.f }, { xVel, yVel }, { 0.0f, 0.0f });
-        particles.push_back(particle);
-    }
+    std::vector<Particle> particles = createParticles(numParticles, positionRange, velocityRange);
     std::vector<Particle> particlesRestore = particles;
 
-    CollisionHandler handler(particles, 2, 2, .0034f, 9.8);
+	//Collision Handler
+    CollisionHandler handler(particles, 2, 2, .0034f);
 
+	//SHADER PROGRAM
     ShaderProgram shaderProgram("Shaders/vertex.glsl", "Shaders/fragment.glsl");
 
     //cargo la informacion de los vertices en la GPU
@@ -146,46 +126,41 @@ void processInput(GLFWwindow* window, CollisionHandler& handler, std::vector<Par
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
-    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-        handler.changeGravity();
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        handler.changeGravity('u');
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        handler.changeGravity('r');
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        handler.changeGravity('d');
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        handler.changeGravity('l');
     if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
         handler.setParticles(particlesRestore);
     if (glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS) {
-        std::vector<Particle> particles;
-        const int numParticles = 3500;
-
-        // Ranges
-        const float positionRange = 2.0f;
-        const float velocityRange = 5.0f;
-        const float massRange = 5.0f;
-        const float colorRange = 1.f;
-
-        for (int i = 0; i < numParticles; ++i) {
-            //Position
-            float xPos = static_cast<float>(rand()) / RAND_MAX * positionRange - positionRange / 2;
-            float yPos = static_cast<float>(rand()) / RAND_MAX * positionRange - positionRange / 2;
-
-            //Veelocity
-            float xVel = static_cast<float>(rand()) / RAND_MAX * velocityRange - velocityRange / 2;
-            float yVel = static_cast<float>(rand()) / RAND_MAX * velocityRange - velocityRange / 2;
-
-            //Mass
-            //float mass = static_cast<float>(rand()) / RAND_MAX * massRange + 1.f; // Aseguramos que la masa sea mayor que 1
-            float mass = 4.f;
-            //color
-            float red = 0.01f + (static_cast<float>(rand()) / RAND_MAX);
-            float green = 0.01f + (static_cast<float>(rand()) / RAND_MAX);
-            float blue = 0.01f + (static_cast<float>(rand()) / RAND_MAX);
-
-            // Creamos la partícula y la agregamos al vector
-            Particle particle({ xPos, yPos }, RADIUS, { red, green, blue }, { xVel, yVel }, { 0.0f, 0.0f });
-            particles.push_back(particle);
-        }
-        handler.setParticles(particles);
+        handler.setParticles(createParticles(numParticles, positionRange, velocityRange));
     }
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
+}
+
+static std::vector<Particle> createParticles(int numParticles, float positionRange, float velocityRange){
+    std::vector<Particle> particles;
+
+    for (int i = 0; i < numParticles; ++i) {
+        //Position
+        float xPos = static_cast<float>(rand()) / RAND_MAX * positionRange - positionRange / 2;
+        float yPos = static_cast<float>(rand()) / RAND_MAX * positionRange - positionRange / 2;
+
+        //Velocity
+        float xVel = static_cast<float>(rand()) / RAND_MAX * velocityRange - velocityRange / 2;
+        float yVel = static_cast<float>(rand()) / RAND_MAX * velocityRange - velocityRange / 2;
+
+        // Creamos la partícula y la agregamos al vector
+        Particle particle({ xPos, yPos }, RADIUS, {0.f}, { xVel, yVel }, { 0.0f, 0.0f });
+        particles.push_back(particle);
+    }
+	return particles;
 }
