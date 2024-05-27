@@ -1,39 +1,45 @@
+//external includes
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
-#include "Particle.h"
-#include <CollisionHandler.h>
 #include <cstdlib> // rand
 #include <ctime>   // rand seed
-#include <ShaderProgram.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+//internal includes
+#include "physics/Particle.h"
+#include "physics/CollisionHandler.h"
+#include "renderer/ShaderProgram.h"
+#include "renderer/VAO.h"
+#include "renderer/EBO.h"
+#include "renderer/VBO.h"
+#include "renderer/Renderer.h"
+#include "interface/Interface.h"
 
-//Settings
-const unsigned int SCR_WIDTH =1000;
-const unsigned int SCR_HEIGHT = 1000;
+//settings
+#include "Settings.h"
 
-const float RADIUS = 0.006f;
-const float PI = 3.14159265359f;
-const unsigned int STEPS = 10;
-const float ANGLE = PI * 2.f / STEPS;
-
-const float positionRange = 2.0f;
-const float velocityRange = 5.0f;
-const float massRange = 5.0f;
-const int numParticles = 3500;
-
-void processInput(GLFWwindow* window, CollisionHandler& handler, std::vector<Particle>& particlesRestore);
-static std::vector<Particle> createParticles(int numParticles, float positionRange, float velocityRange);
+void processInput(GLFWwindow* window, CollisionHandler& handler, std::vector<Particle>& particlesRestore, std::array<float, 2> cursor_pos);
+static std::vector<Particle> createParticles(int numParticles);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
-int main() {
-    glfwInit();
+//globals 
+bool left_clicked = false;
+bool right_clicked = false;
 
-    //INITIALIZATION
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "PhysicsEngine", NULL, NULL);
+int g_screenWidth = SCR_WIDTH;
+int g_screenHeight = SCR_HEIGHT;
+
+int main() {
+
+    if (!glfwInit()) {
+        std::cout << "Failed to initialize GLFW" << std::endl;
+        return -1;
+    }
+
+    GLFWwindow* window = glfwCreateWindow(g_screenWidth, g_screenHeight, "Particle Simulation", NULL, NULL);
     if (window == NULL) {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
@@ -47,83 +53,120 @@ int main() {
         return -1;
     }
 
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
     //RESIZE
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
+{
+
     //Paricles
     srand(time(nullptr));
-    std::vector<Particle> particles = createParticles(numParticles, positionRange, velocityRange);
+    std::vector<Particle> particles = createParticles(NUM_PARTICLES);
     std::vector<Particle> particlesRestore = particles;
 
-	//Collision Handler
-    CollisionHandler handler(particles, 2, 2, .0034f);
+    //Collision Handler
+    CollisionHandler handler(particles, g_screenWidth, g_screenHeight);
 
-	//SHADER PROGRAM
-    ShaderProgram shaderProgram("Shaders/vertex.glsl", "Shaders/fragment.glsl");
+	//square canvas
+    float vertices_canvas[] = {
+    -1.0f, -1.0f,
+    1.0f, -1.0f,
+    1.0f, 1.0f,
+    -1.0f, 1.0f,
+    };
+    GLuint indices_canvas[] = {
+    0, 1, 2,
+    2, 3, 0
+    };
 
-    //cargo la informacion de los vertices en la GPU
-    GLuint buffer_id;
-    {
-        //vertices de un circulo
-        std::vector<float> vertices;
-        for (int i = 0; i < STEPS; ++i) {
-            float x = RADIUS * cos(ANGLE * i);
-            float y = RADIUS * sin(ANGLE * i);
-            vertices.push_back(x);
-            vertices.push_back(y);
-        }
-        //buffer de vertices
+    VAO canvasVAO;
+    VBO canvasVBO(vertices_canvas, sizeof(vertices_canvas));
+    canvasVAO.Bind();
+    canvasVAO.LinkAttribute(canvasVBO, 0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
+	EBO canvasEBO = EBO(indices_canvas, sizeof(indices_canvas) / sizeof(GLuint));       //Order of function calls is EXTREMELY important (bind vao, link attrib, create ebo)! otherwise it will not work (error: (nvoglv64.dll) 0xC0000005 access violation)
 
-        glGenBuffers(1, &buffer_id);
-        glBindBuffer(GL_ARRAY_BUFFER, buffer_id);															//selecciono el buffer con su id
-        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);	//cargo los datos (vertices en este caso) en el buffer que seleccione previamente
-        //indico a opengl los atributos guardados en el buffer (Vertex Attributes)
-        glEnableVertexAttribArray(0);																		//activo el atributo 0
-        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);						//indico que cada vertice tiene 2 floats de posicion
-        glBindBuffer(GL_ARRAY_BUFFER, 0); 																	//deselecciono el buffer para evitar modificaciones accidentales
-    }
+    //cursor
+    ShaderProgram cursorShaders("src/renderer/shaders/canvasVert.glsl", "src/renderer/shaders/cursorFrag.glsl");
+
+    //particle
+    ShaderProgram particleShaders("src/renderer/shaders/canvasVert.glsl", "src/renderer/shaders/particleFrag.glsl");
+
+	//renderer settings
+    enableBlending(true);
+
+    //interface
+	Interface interface(window);
+
+	//performance
+    float frame_start = glfwGetTime();
+	float delta_time = 1.f;
+	float fps = 1.f / delta_time;
 
 
     //RENDER LOOP
     while (!glfwWindowShouldClose(window))
     {
+
+        //Time
+        float frame_end = glfwGetTime();
+        delta_time = frame_end - frame_start;
+        frame_start = frame_end;
+        //Performance
+        int ms = delta_time * 1000;
+        fps = 1.f / delta_time;
+
+        //Update
+        handler.updatePositions(delta_time, SUB_STEPS);
+
         //Imput
-        processInput(window, handler, particlesRestore);
+        double cursor_x, cursor_y;
+        glfwGetCursorPos(window, &cursor_x, &cursor_y);
+        std::array<GLfloat, 2> cursor_pos{ (GLfloat)cursor_x ,  (GLfloat)cursor_y };
+        processInput(window, handler, particlesRestore, cursor_pos);
 
         //Rendering
-        glClearColor(0.05f, 0.05f, 0.05f, 0);  //BG color
-        glClear(GL_COLOR_BUFFER_BIT);
+        clear(BG_R, BG_G, BG_B, 1.f);
 
-        handler.updatePositions();
-
-        //ciclo de renderizado de las particulas
-        shaderProgram.Use();																					//activo el programa de shaders
-
-        //uniforms
-        unsigned int transformLoc = glGetUniformLocation(shaderProgram.GetID(), "transform");				//obtengo la ubicacion de la variable uniforme "transform"
-        GLint color_location = glGetUniformLocation(shaderProgram.GetID(), "color");							//obtengo la ubicacion de la variable uniforme "color"
-
-        for (Particle& p : handler.getParticles()) {
-            std::array<float, 3> color = p.color;
-            color = { abs(p.vel[0]+p.vel[1]), 0.3f, 0.3f };																		//cambio el color a blanco para que no se vean las particulas
-            glUniform4fv(color_location, 1, color.data());														//le paso el color al shader
-
-            glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(p.pos[0], p.pos[1], 0.0f));		//aplico transformacion de traslacion
-            glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(translationMatrix)); 						//le paso la matriz de transformacion al shader
-            glDrawArrays(GL_TRIANGLE_FAN, 0, STEPS);																//dibujo el circulo
+        //particles
+        for (Particle& p : handler.particles) {
+			drawParticle(canvasVAO, canvasEBO, particleShaders, p.pos, p.vel, RADIUS, g_screenWidth, g_screenHeight);
         }
+
+		//cursor
+        drawCursor(canvasVAO, canvasEBO, cursorShaders, cursor_pos, CURSOR_RADIUS, left_clicked, right_clicked, frame_start, g_screenWidth, g_screenHeight);
+
+		//Interface
+		interface.BeginFrame();
+        {
+            ImGui::Begin("Performance:");
+            ImGui::Text("Frame time: %d ms", ms);
+			ImGui::Text("FPS: %.0f", fps);
+            ImGui::End();
+
+            ImGui::Begin("Controls:");
+			ImGui::Text("WASD: Change gravity direction");
+			ImGui::Text("R: Restore particles");
+			ImGui::Text("N: New particles");
+			ImGui::Text("Left click: Attraction");
+			ImGui::Text("Right click: Repulsion");
+			ImGui::Text("ESC: Exit simulation");
+            ImGui::End();
+        }
+		interface.EndFrame();
 
         //Check and call events and swap the buffers
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
-
+}
+	glfwDestroyWindow(window);
     glfwTerminate();
 }
 
 
-void processInput(GLFWwindow* window, CollisionHandler& handler, std::vector<Particle>& particlesRestore)
+void processInput(GLFWwindow* window, CollisionHandler& handler, std::vector<Particle>& particlesRestore, std::array<float, 2> cursor_pos)
 {
+    //keyboard
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
@@ -135,32 +178,48 @@ void processInput(GLFWwindow* window, CollisionHandler& handler, std::vector<Par
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         handler.changeGravity('l');
     if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
-        handler.setParticles(particlesRestore);
+        handler.particles=particlesRestore;
     if (glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS) {
-        handler.setParticles(createParticles(numParticles, positionRange, velocityRange));
+        handler.particles=createParticles(NUM_PARTICLES);
     }
+
+	//mouse
+	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+        left_clicked = true;
+        cursor_pos[0] = (cursor_pos[0] - ((float)g_screenWidth / 2.0f)) / ((float)g_screenWidth / 2.0f);
+        cursor_pos[1] = (((float)g_screenHeight / 2.0f) - cursor_pos[1]) / ((float)g_screenHeight / 2.0f);
+        handler.applyAttraction(cursor_pos, CURSOR_RADIUS, ATTRACTION_STRENGTH);
+    }else{
+        left_clicked = false;
+        handler.applyAttraction(cursor_pos, 0, 0);
+    }
+
+	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
+		right_clicked = true;
+		cursor_pos[0] = (cursor_pos[0] - ((float)g_screenWidth / 2.0f)) / ((float)g_screenWidth / 2.0f);
+		cursor_pos[1] = (((float)g_screenHeight / 2.0f) - cursor_pos[1]) / ((float)g_screenHeight / 2.0f);
+		handler.applyAttraction(cursor_pos, CURSOR_RADIUS, REPULSION_STRENGTH);
+	}
+	else right_clicked = false;
+
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
+	g_screenWidth = width;
+	g_screenHeight = height;
 }
 
-static std::vector<Particle> createParticles(int numParticles, float positionRange, float velocityRange){
+static std::vector<Particle> createParticles(int numParticles) {
     std::vector<Particle> particles;
-
     for (int i = 0; i < numParticles; ++i) {
-        //Position
-        float xPos = static_cast<float>(rand()) / RAND_MAX * positionRange - positionRange / 2;
-        float yPos = static_cast<float>(rand()) / RAND_MAX * positionRange - positionRange / 2;
-
-        //Velocity
-        float xVel = static_cast<float>(rand()) / RAND_MAX * velocityRange - velocityRange / 2;
-        float yVel = static_cast<float>(rand()) / RAND_MAX * velocityRange - velocityRange / 2;
-
-        // Creamos la partícula y la agregamos al vector
-        Particle particle({ xPos, yPos }, RADIUS, {0.f}, { xVel, yVel }, { 0.0f, 0.0f });
-        particles.push_back(particle);
+        // Position within screen bounds
+        float xPos = static_cast<float>(std::rand()) / RAND_MAX * 2 - 1;
+        float yPos = static_cast<float>(std::rand()) / RAND_MAX * 2 - 1;
+        // Create particle and add to vector
+        particles.emplace_back(Particle({ xPos, yPos }, RADIUS, { 0.f }, { 0, 0 }, { 0.0f }));
     }
-	return particles;
+    return particles;
 }
+
