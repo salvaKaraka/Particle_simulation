@@ -7,10 +7,12 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <utils/SKMath.h>
 
 //internal includes
-#include "physics/Particle.h"
-#include "physics/CollisionHandler.h"
+#include "physics/VerletObject.h"
+#include "physics/PhysicsEngine.h"
+
 #include "renderer/ShaderProgram.h"
 #include "renderer/VAO.h"
 #include "renderer/EBO.h"
@@ -21,8 +23,7 @@
 //settings
 #include "Settings.h"
 
-void processInput(GLFWwindow* window, CollisionHandler& handler, std::array<float, 2> cursor_pos);
-static Particle createRandomParticle();
+void processInput(GLFWwindow* window, PhysicsEngine& physics, Vec2 cursor_pos);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
 //globals 
@@ -32,6 +33,7 @@ bool right_clicked = false;
 int g_screenWidth = SCR_WIDTH;
 int g_screenHeight = SCR_HEIGHT;
 
+float g_radius = 0.05f;
 
 int main() {
 
@@ -64,7 +66,7 @@ int main() {
     srand(time(nullptr));
   
     //Collision Handler
-    CollisionHandler handler;
+	PhysicsEngine physics;
 
 	//square canvas
     float vertices_canvas[] = {
@@ -107,6 +109,9 @@ int main() {
     float container_height = 1.0f;
     char* container_type = (char*)"box";
 
+	physics.setFrameRate(60.0f);
+	physics.setSubSteps(SUB_STEPS);
+
     //RENDER LOOP
     while (!glfwWindowShouldClose(window))
     {
@@ -120,20 +125,21 @@ int main() {
         fps = 1.f / delta_time;
 
         //Update
-        handler.updatePositions(delta_time, SUB_STEPS);
+        physics.udateSubSteps();
 
         //Imput
         double cursor_x, cursor_y;
         glfwGetCursorPos(window, &cursor_x, &cursor_y);
-        std::array<GLfloat, 2> cursor_pos{ (GLfloat)cursor_x ,  (GLfloat)cursor_y };
-        processInput(window, handler, cursor_pos);
+        Vec2 cursor_pos( cursor_x , cursor_y );
+        processInput(window, physics, cursor_pos);
 
         //Rendering
         clear(BG_R, BG_G, BG_B, 1.f);
 
         //particles
-        for (Particle& p : handler.particles) {
-			drawParticle(canvasVAO, canvasEBO, particleShaders, p.pos, p.vel, RADIUS, g_screenWidth, g_screenHeight);
+        for (VerletObject& object : physics.getVerletObjects()) {
+			float abs_vel = object.getVelocity(physics.getStepDt()).magnitude();
+			drawParticle(canvasVAO, canvasEBO, particleShaders, object.current_pos, abs_vel , object.radius, g_screenWidth, g_screenHeight);
         }
 
 		//cursor
@@ -147,10 +153,14 @@ int main() {
             ImGui::Begin("Performance:");
             ImGui::Text("Frame time: %d ms", ms);
 			ImGui::Text("FPS: %.0f", fps);
+            ImGui::Text("Ammount of objects: %d", physics.getVerletObjects().size());
             ImGui::End();
 
-			ImGui::Begin("Container:");
+
+			ImGui::Begin("Settings:");
             //size
+            ImGui::SliderFloat("Particle radius", &g_radius, 0.01f, 0.1f);
+
 			ImGui::SliderFloat("Container radius", &container_radius, 0.1f, 1.0f);
 			ImGui::SliderFloat("Container width", &container_width, 0.1f, 2.0f);
 			ImGui::SliderFloat("Container height", &container_height, 0.1f, 2.0f);
@@ -162,7 +172,7 @@ int main() {
 			if (ImGui::Button("Circle")) {
 				container_type = (char*)"circle";
             }
-            handler.setContainer(container_type, container_width, container_height, container_radius);
+            physics.setContainer(container_type, container_width, container_height, container_radius);
 
 
 
@@ -187,44 +197,46 @@ int main() {
 }
 
 
-void processInput(GLFWwindow* window, CollisionHandler& handler, std::array<float, 2> cursor_pos)
+void processInput(GLFWwindow* window, PhysicsEngine& physics, Vec2 cursor_pos)
 {
     //keyboard
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        handler.changeGravity('u');
+        physics.setGravity(Vec2(0.0f,-GRAVITY));
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        handler.changeGravity('r');
+        physics.setGravity(Vec2(-GRAVITY,0.0f));
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        handler.changeGravity('d');
+        physics.setGravity(Vec2(0.0f, GRAVITY));
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        handler.changeGravity('l');
-    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-        handler.addParticle(createRandomParticle());
+        physics.setGravity(Vec2(GRAVITY, 0.0f));
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS){
+		float x = (rand() % 100) / 100.0f - 0.5f;
+		float y = (rand() % 100) / 100.0f - 0.5f;
+        physics.createVerletObject(Vec2(x,y),g_radius);
+    }
 	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-        handler.removeParticle();
+        physics.removeVerletObject();
     }
 
 	//mouse
 	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
         left_clicked = true;
-        cursor_pos[0] = (cursor_pos[0] - ((float)g_screenWidth / 2.0f)) / ((float)g_screenWidth / 2.0f);
-        cursor_pos[1] = (((float)g_screenHeight / 2.0f) - cursor_pos[1]) / ((float)g_screenHeight / 2.0f);
-        handler.applyAttraction(cursor_pos, CURSOR_RADIUS, ATTRACTION_STRENGTH);
+        cursor_pos.x = (cursor_pos.x - ((float)g_screenWidth / 2.0f)) / ((float)g_screenWidth / 2.0f);
+        cursor_pos.y = (((float)g_screenHeight / 2.0f) - cursor_pos.y) / ((float)g_screenHeight / 2.0f);
+        physics.applyAttraction(cursor_pos, CURSOR_RADIUS, ATTRACTION_STRENGTH);
     }else{
         left_clicked = false;
-        handler.applyAttraction(cursor_pos, 0, 0);
+        physics.applyAttraction(cursor_pos, 0, 0);
     }
 
 	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
 		right_clicked = true;
-		cursor_pos[0] = (cursor_pos[0] - ((float)g_screenWidth / 2.0f)) / ((float)g_screenWidth / 2.0f);
-		cursor_pos[1] = (((float)g_screenHeight / 2.0f) - cursor_pos[1]) / ((float)g_screenHeight / 2.0f);
-		handler.applyAttraction(cursor_pos, CURSOR_RADIUS, REPULSION_STRENGTH);
+        cursor_pos.x = (cursor_pos.x - ((float)g_screenWidth / 2.0f)) / ((float)g_screenWidth / 2.0f);
+        cursor_pos.y = (((float)g_screenHeight / 2.0f) - cursor_pos.y) / ((float)g_screenHeight / 2.0f);
+        physics.applyAttraction(cursor_pos, CURSOR_RADIUS, REPULSION_STRENGTH);
 	}
 	else right_clicked = false;
-
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -232,13 +244,5 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     glViewport(0, 0, width, height);
 	g_screenWidth = width;
 	g_screenHeight = height;
-}
-
-static Particle createRandomParticle() {
-    //float xPos = static_cast<float>(std::rand()) / RAND_MAX * 2 - 1;
-    //float yPos = static_cast<float>(std::rand()) / RAND_MAX * 2 - 1;
-    // Create particle and add to vector
-    Particle particle({ -2, 1 }, RADIUS, { 0.f }, { 4, 1 }, { 0.0f });
-    return particle;
 }
 

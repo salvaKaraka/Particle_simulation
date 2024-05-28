@@ -24,10 +24,10 @@
     <ClCompile Include="Dependencies\glad.c">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
-    <ClCompile Include="src\physics\Particle.cpp">
+    <ClCompile Include="src\physics\VerletObject.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
-    <ClCompile Include="src\physics\CollisionHandler.cpp">
+    <ClCompile Include="src\physics\Solver.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
     <ClCompile Include="src\renderer\VBO.cpp">
@@ -72,12 +72,18 @@
     <ClCompile Include="src\interface\imgui\imgui_widgets.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
+    <ClCompile Include="src\utils\SKMath.cpp">
+      <Filter>Archivos de origen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physics\PhysicsEngine.cpp">
+      <Filter>Archivos de origen</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\physics\Particle.h">
+    <ClInclude Include="src\physics\VerletObject.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
-    <ClInclude Include="src\physics\CollisionHandler.h">
+    <ClInclude Include="src\physics\Solver.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
     <ClInclude Include="src\Settings.h">
@@ -132,6 +138,15 @@
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
     <ClInclude Include="src\physics\Container.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\SKMath.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="src\physics\PhysicsEngine.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="src\physics\Link.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
   </ItemGroup>

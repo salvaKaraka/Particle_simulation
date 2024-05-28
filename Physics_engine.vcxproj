@@ -72,28 +72,28 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(ProjectDir)Dependencies\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)Dependencies\include;$(ProjectDir)src;$(IncludePath)</IncludePath>
     <LibraryPath>$(ProjectDir)\Dependencies\lib;$(LibraryPath)</LibraryPath>
     <ExternalIncludePath>$(ProjectDir)\Dependencies\include;$(ExternalIncludePath)</ExternalIncludePath>
     <OutDir>$(SolutionDir)\bin\$(Plataform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)\bin\intermediates\$(Plataform)\$(Configuration)</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(ProjectDir)Dependencies\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)Dependencies\include;$(ProjectDir)src;$(IncludePath)</IncludePath>
     <LibraryPath>$(ProjectDir)\Dependencies\lib;$(LibraryPath)</LibraryPath>
     <ExternalIncludePath>$(ProjectDir)\Dependencies\include;$(ExternalIncludePath)</ExternalIncludePath>
     <OutDir>$(SolutionDir)\bin\$(Plataform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)\bin\intermediates\$(Plataform)\$(Configuration)</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(ProjectDir)Dependencies\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)Dependencies\include;$(ProjectDir)src;$(IncludePath)</IncludePath>
     <ExternalIncludePath>$(ProjectDir)\Dependencies\include;$(ExternalIncludePath)</ExternalIncludePath>
     <LibraryPath>$(ProjectDir)\Dependencies\lib;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)\bin\$(Plataform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)\bin\intermediates\$(Plataform)\$(Configuration)</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(ProjectDir)Dependencies\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)Dependencies\include;$(ProjectDir)src;$(IncludePath)</IncludePath>
     <ExternalIncludePath>$(ProjectDir)\Dependencies\include;$(ExternalIncludePath)</ExternalIncludePath>
     <LibraryPath>$(ProjectDir)\Dependencies\lib;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)\bin\$(Plataform)\$(Configuration)\</OutDir>
@@ -172,9 +172,10 @@
     <ClCompile Include="src\interface\imgui\imgui_tables.cpp" />
     <ClCompile Include="src\interface\imgui\imgui_widgets.cpp" />
     <ClCompile Include="src\interface\Interface.cpp" />
-    <ClCompile Include="src\physics\CollisionHandler.cpp" />
+    <ClCompile Include="src\physics\Solver.cpp" />
     <ClCompile Include="Dependencies\glad.c" />
-    <ClCompile Include="src\physics\Particle.cpp" />
+    <ClCompile Include="src\physics\PhysicsEngine.cpp" />
+    <ClCompile Include="src\physics\VerletObject.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\renderer\EBO.cpp" />
     <ClCompile Include="src\renderer\ErrorChecker.cpp" />
@@ -182,6 +183,7 @@
     <ClCompile Include="src\renderer\ShaderProgram.cpp" />
     <ClCompile Include="src\renderer\VAO.cpp" />
     <ClCompile Include="src\renderer\VBO.cpp" />
+    <ClCompile Include="src\utils\SKMath.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\interface\imgui\imconfig.h" />
@@ -194,9 +196,11 @@
     <ClInclude Include="src\interface\imgui\imstb_textedit.h" />
     <ClInclude Include="src\interface\imgui\imstb_truetype.h" />
     <ClInclude Include="src\interface\Interface.h" />
-    <ClInclude Include="src\physics\CollisionHandler.h" />
+    <ClInclude Include="src\physics\Link.h" />
+    <ClInclude Include="src\physics\Solver.h" />
     <ClInclude Include="src\physics\Container.h" />
-    <ClInclude Include="src\physics\Particle.h" />
+    <ClInclude Include="src\physics\PhysicsEngine.h" />
+    <ClInclude Include="src\physics\VerletObject.h" />
     <ClInclude Include="src\renderer\EBO.h" />
     <ClInclude Include="src\renderer\ErrorChecker.h" />
     <ClInclude Include="src\renderer\Renderer.h" />
@@ -204,6 +208,7 @@
     <ClInclude Include="src\renderer\VAO.h" />
     <ClInclude Include="src\renderer\VBO.h" />
     <ClInclude Include="src\Settings.h" />
+    <ClInclude Include="src\utils\SKMath.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\renderer\shaders\cursorFrag.glsl" />

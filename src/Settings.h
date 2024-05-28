@@ -18,16 +18,17 @@ constexpr int NUM_PARTICLES = 100;
 
 constexpr unsigned int SUB_STEPS = 8;
 
-constexpr float GRAVITY = -1.9f;
-constexpr float BORDER_COLLISION_DAMPING = .9f;
-constexpr float PARTICLE_COLLISION_DAMPING = .98f;
+constexpr float GRAVITY = -0.98f;
 
 constexpr float CURSOR_RADIUS = 0.5f;
 
-constexpr float ATTRACTION_STRENGTH = 100.0f;
-constexpr float REPULSION_STRENGTH = -200.0f;
+constexpr float ATTRACTION_STRENGTH = 1000.0f;
+constexpr float REPULSION_STRENGTH = -2000.0f;
 
 //TODOs: 
 // - Add new objects to the simulation
 // - Fix the resizing of the window
-
+// - Fix coordenate system
+// - Add a position variable to the container
+// - Add Links between particles
+// - Batch rendering
