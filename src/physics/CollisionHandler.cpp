@@ -1,7 +1,26 @@
 #include "CollisionHandler.h"
 
-CollisionHandler::CollisionHandler(std::vector<Particle> p, unsigned int w, unsigned int h) 
-    : particles{ p }, width{ w }, height{ h }{}
+void CollisionHandler::addParticle(Particle p) {
+	particles.push_back(std::move(p));
+}
+
+void CollisionHandler::removeParticle() {
+	if (!particles.empty())
+		particles.pop_back();
+}
+
+void CollisionHandler::setContainer(const char* strategyType, float w, float h, float r) {
+    if (strcmp(strategyType, "box") == 0) {
+        container = std::make_unique<BoxContainer>(w, h);
+    }
+    else if (strcmp(strategyType, "circle") == 0) {
+        container = std::make_unique<CircleContainer>(r);
+    }
+    else
+	{
+		container = std::make_unique<BoxContainer>(w, h);
+	}
+}
 
 void CollisionHandler::updatePositions(float dt, unsigned int sub_steps) {
     float sub_dt = dt / (float) sub_steps;
@@ -14,10 +33,23 @@ void CollisionHandler::updatePositions(float dt, unsigned int sub_steps) {
 
             p.pos[0] += p.vel[0] * sub_dt;
             p.pos[1] += p.vel[1] * sub_dt;
-
-            // Check border collisions
-            handleBorderCollisions(p);
+     
         }
+
+        // Check border collisions
+        handleWorldCollisions();
+        /*for (Particle& p : particles) {
+            //chack left and right
+            if (abs(p.pos[0]) + p.radius > 1 / 2.0f) {
+                p.pos[0] = (1 / 2.0f - p.radius) * (p.pos[0] > 0 ? 1 : -1);
+                p.vel[0] *= -1 * BORDER_COLLISION_DAMPING; // Reverse velocity and slow down
+            }
+            //chack top and bottom
+            if (abs(p.pos[1]) + p.radius > 1 / 2.0f) {
+                p.pos[1] = (1 / 2.0f - p.radius) * (p.pos[1] > 0 ? 1 : -1);
+                p.vel[1] *= -1 * BORDER_COLLISION_DAMPING;
+            }
+        }*/
 
         // Check particle collisions
         for (size_t i = 0; i < particles.size(); ++i) {
@@ -31,42 +63,12 @@ void CollisionHandler::updatePositions(float dt, unsigned int sub_steps) {
     }
 }
 
-//Square
-void CollisionHandler::handleBorderCollisions(Particle& p) const {
-    //chack left and right
-    if (abs(p.pos[0]) + p.radius > 1) {
-        p.pos[0] = (1 - p.radius) * (p.pos[0] > 0 ? 1 : -1);
-        p.vel[0] *= -1 * BORDER_COLLISION_DAMPING; // Reverse velocity and slow down
-    }
-    //chack top and bottom
-    if (abs(p.pos[1]) + p.radius > 1) {
-        p.pos[1] = (1 - p.radius) * (p.pos[1] > 0 ? 1 : -1);
-        p.vel[1] *= -1 * BORDER_COLLISION_DAMPING;
-    }
+void CollisionHandler::handleWorldCollisions() {
+	for (Particle& p : particles) {
+		// Check border collisions
+		container->handleBorderCollisions(p);
+	}
 }
-
-/*/Circle
-void CollisionHandler::handleBorderCollisions(Particle& p) const {
-
-    float circleRadius = static_cast<float>(width) / 2.2;
-
-    float distFromCenter = sqrt(p.pos[0] * p.pos[0] + p.pos[1] * p.pos[1]);
-
-    if (distFromCenter + p.radius > circleRadius) {
-        float normX = p.pos[0] / distFromCenter;
-        float normY = p.pos[1] / distFromCenter;
-
-        p.pos[0] = normX * (circleRadius - p.radius);
-        p.pos[1] = normY * (circleRadius - p.radius);
-
-        float dotProduct = p.vel[0] * normX + p.vel[1] * normY;
-        p.vel[0] -= 2 * dotProduct * normX;
-        p.vel[1] -= 2 * dotProduct * normY;
-
-        p.vel[0] *= BORDER_COLLISION_DAMPING;
-        p.vel[1] *= BORDER_COLLISION_DAMPING;
-    }
-}*/
 
 
 void CollisionHandler::handleParticleCollisions(Particle& p1, Particle& p2) {

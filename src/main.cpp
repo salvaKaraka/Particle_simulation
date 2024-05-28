@@ -21,8 +21,8 @@
 //settings
 #include "Settings.h"
 
-void processInput(GLFWwindow* window, CollisionHandler& handler, std::vector<Particle>& particlesRestore, std::array<float, 2> cursor_pos);
-static std::vector<Particle> createParticles(int numParticles);
+void processInput(GLFWwindow* window, CollisionHandler& handler, std::array<float, 2> cursor_pos);
+static Particle createRandomParticle();
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
 //globals 
@@ -31,6 +31,7 @@ bool right_clicked = false;
 
 int g_screenWidth = SCR_WIDTH;
 int g_screenHeight = SCR_HEIGHT;
+
 
 int main() {
 
@@ -61,11 +62,9 @@ int main() {
 
     //Paricles
     srand(time(nullptr));
-    std::vector<Particle> particles = createParticles(NUM_PARTICLES);
-    std::vector<Particle> particlesRestore = particles;
-
+  
     //Collision Handler
-    CollisionHandler handler(particles, g_screenWidth, g_screenHeight);
+    CollisionHandler handler;
 
 	//square canvas
     float vertices_canvas[] = {
@@ -102,6 +101,11 @@ int main() {
 	float delta_time = 1.f;
 	float fps = 1.f / delta_time;
 
+    //containers
+    float container_radius = 1.0f;
+    float container_width = 1.0f;
+    float container_height = 1.0f;
+    char* container_type = (char*)"box";
 
     //RENDER LOOP
     while (!glfwWindowShouldClose(window))
@@ -122,7 +126,7 @@ int main() {
         double cursor_x, cursor_y;
         glfwGetCursorPos(window, &cursor_x, &cursor_y);
         std::array<GLfloat, 2> cursor_pos{ (GLfloat)cursor_x ,  (GLfloat)cursor_y };
-        processInput(window, handler, particlesRestore, cursor_pos);
+        processInput(window, handler, cursor_pos);
 
         //Rendering
         clear(BG_R, BG_G, BG_B, 1.f);
@@ -138,10 +142,29 @@ int main() {
 		//Interface
 		interface.BeginFrame();
         {
+
+
             ImGui::Begin("Performance:");
             ImGui::Text("Frame time: %d ms", ms);
 			ImGui::Text("FPS: %.0f", fps);
             ImGui::End();
+
+			ImGui::Begin("Container:");
+            //size
+			ImGui::SliderFloat("Container radius", &container_radius, 0.1f, 1.0f);
+			ImGui::SliderFloat("Container width", &container_width, 0.1f, 2.0f);
+			ImGui::SliderFloat("Container height", &container_height, 0.1f, 2.0f);
+			//type
+            if (ImGui::Button("Box")) {
+                container_type = (char*)"box";
+            }
+			ImGui::SameLine();
+			if (ImGui::Button("Circle")) {
+				container_type = (char*)"circle";
+            }
+            handler.setContainer(container_type, container_width, container_height, container_radius);
+
+
 
             ImGui::Begin("Controls:");
 			ImGui::Text("WASD: Change gravity direction");
@@ -164,7 +187,7 @@ int main() {
 }
 
 
-void processInput(GLFWwindow* window, CollisionHandler& handler, std::vector<Particle>& particlesRestore, std::array<float, 2> cursor_pos)
+void processInput(GLFWwindow* window, CollisionHandler& handler, std::array<float, 2> cursor_pos)
 {
     //keyboard
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -177,10 +200,10 @@ void processInput(GLFWwindow* window, CollisionHandler& handler, std::vector<Par
         handler.changeGravity('d');
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         handler.changeGravity('l');
-    if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
-        handler.particles=particlesRestore;
-    if (glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS) {
-        handler.particles=createParticles(NUM_PARTICLES);
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+        handler.addParticle(createRandomParticle());
+	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+        handler.removeParticle();
     }
 
 	//mouse
@@ -211,15 +234,11 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 	g_screenHeight = height;
 }
 
-static std::vector<Particle> createParticles(int numParticles) {
-    std::vector<Particle> particles;
-    for (int i = 0; i < numParticles; ++i) {
-        // Position within screen bounds
-        float xPos = static_cast<float>(std::rand()) / RAND_MAX * 2 - 1;
-        float yPos = static_cast<float>(std::rand()) / RAND_MAX * 2 - 1;
-        // Create particle and add to vector
-        particles.emplace_back(Particle({ xPos, yPos }, RADIUS, { 0.f }, { 0, 0 }, { 0.0f }));
-    }
-    return particles;
+static Particle createRandomParticle() {
+    //float xPos = static_cast<float>(std::rand()) / RAND_MAX * 2 - 1;
+    //float yPos = static_cast<float>(std::rand()) / RAND_MAX * 2 - 1;
+    // Create particle and add to vector
+    Particle particle({ -2, 1 }, RADIUS, { 0.f }, { 4, 1 }, { 0.0f });
+    return particle;
 }
 

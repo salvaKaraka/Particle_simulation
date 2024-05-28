@@ -7,7 +7,7 @@ class Particle {
 
 public:
     Particle(std::array<float, 2> p, float m, std::array<float, 3> c, std::array<float, 2> v, std::array<float, 2> a);
-	Particle() = default;
+
 	void update();
 
     std::array<float, 2> pos = { 0 };

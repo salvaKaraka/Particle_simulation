@@ -9,12 +9,12 @@ constexpr float BG_G = 0.11f;
 constexpr float BG_B = 0.11f;
 
 
-constexpr float RADIUS = 0.02f;
+constexpr float RADIUS = 0.03f;
 constexpr float PI = 3.14159265359f;
 constexpr unsigned int STEPS = 10;
 constexpr float ANGLE = PI * 2.f / STEPS;
 
-constexpr int NUM_PARTICLES = 1000;
+constexpr int NUM_PARTICLES = 100;
 
 constexpr unsigned int SUB_STEPS = 8;
 
@@ -28,4 +28,6 @@ constexpr float ATTRACTION_STRENGTH = 100.0f;
 constexpr float REPULSION_STRENGTH = -200.0f;
 
 //TODOs: 
+// - Add new objects to the simulation
 // - Fix the resizing of the window
+

@@ -195,6 +195,7 @@
     <ClInclude Include="src\interface\imgui\imstb_truetype.h" />
     <ClInclude Include="src\interface\Interface.h" />
     <ClInclude Include="src\physics\CollisionHandler.h" />
+    <ClInclude Include="src\physics\Container.h" />
     <ClInclude Include="src\physics\Particle.h" />
     <ClInclude Include="src\renderer\EBO.h" />
     <ClInclude Include="src\renderer\ErrorChecker.h" />
