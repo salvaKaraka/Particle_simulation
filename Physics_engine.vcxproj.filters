@@ -154,5 +154,6 @@
     <None Include="src\renderer\shaders\cursorFrag.glsl" />
     <None Include="src\renderer\shaders\canvasVert.glsl" />
     <None Include="src\renderer\shaders\particleFrag.glsl" />
+    <None Include="src\renderer\shaders\containerFrag.glsl" />
   </ItemGroup>
 </Project>
