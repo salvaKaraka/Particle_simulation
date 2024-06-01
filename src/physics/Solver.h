@@ -1,10 +1,12 @@
 #pragma once
 #include "VerletObject.h"
+#include "Link.h"
 #include "Container.h"
 
 #include <memory>
 #include <utils/SKMath.h>
 #include <vector>
+
 
 
 class Solver
@@ -15,6 +17,5 @@ private:
 
 public:
 
-	static void solveCollisions(std::vector<VerletObject>& VerletObjects, std::unique_ptr<Container>& container);
+	static void solve(std::vector<VerletObject>& VerletObjects, std::vector<Link>& links, std::unique_ptr<Container>& container);
 };
-

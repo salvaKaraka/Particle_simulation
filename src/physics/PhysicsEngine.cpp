@@ -11,7 +11,7 @@ void PhysicsEngine::udateSubSteps() {
 void PhysicsEngine::update(float dt) {
 	applyGravity();
 	updatePositions(dt);
-	Solver::solveCollisions(VerletObjects, container);
+	Solver::solve(VerletObjects,Links, container);
 }
 
 void PhysicsEngine::updatePositions(float dt) {
@@ -20,20 +20,16 @@ void PhysicsEngine::updatePositions(float dt) {
 	}
 }
 
-void PhysicsEngine::applyGravity() {
-	for (VerletObject& object : VerletObjects) {
-		object.accelerate(gravity);
+VerletObject& PhysicsEngine::addVerletObject(Vec2 pos, float rad) {
+	VerletObject object(pos, rad);
+	VerletObjects.emplace_back(VerletObject(pos, rad));
+	return VerletObjects.back();
+}
+
+void PhysicsEngine::removeVerletObject() {
+	if (VerletObjects.size() > 0) {
+		VerletObjects.pop_back();
 	}
-}
-
-void PhysicsEngine::setObjectVelocity(VerletObject& object, Vec2 vel) {
-	object.setVelocity(vel, getStepDt());
-}
-
-VerletObject& PhysicsEngine::createVerletObject(Vec2 pos, float rad) {
-	VerletObject object(pos,rad);
-	addVerletObject(object);
-	return object;
 }
 
 void PhysicsEngine::setContainer(const char* strategyType, float w, float h, float r) {
@@ -49,11 +45,17 @@ void PhysicsEngine::setContainer(const char* strategyType, float w, float h, flo
 	}
 }
 
-void PhysicsEngine::removeVerletObject() {
-	if (VerletObjects.size() > 0){
-		VerletObjects.pop_back();
+
+void PhysicsEngine::applyGravity() {
+	for (VerletObject& object : VerletObjects) {
+		object.accelerate(gravity);
 	}
 }
+
+void PhysicsEngine::setObjectVelocity(VerletObject& object, Vec2 vel) const {
+	object.setVelocity(vel, getStepDt());
+}
+
 
 void PhysicsEngine::applyAttraction(Vec2& cursor_pos, float attraction_radius, float attraction_strength) {
 	for (VerletObject& object : VerletObjects) {

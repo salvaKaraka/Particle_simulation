@@ -18,5 +18,5 @@ struct VerletObject {
     Vec2 prev_pos;
     Vec2 current_pos;
     Vec2 acc;
-    float radius = RADIUS;
+    float radius;
 };
