@@ -9,11 +9,6 @@ constexpr float BG_G = 0.11f;
 constexpr float BG_B = 0.11f;
 
 
-constexpr float RADIUS = 0.03f;
-constexpr float PI = 3.14159265359f;
-constexpr unsigned int STEPS = 10;
-constexpr float ANGLE = PI * 2.f / STEPS;
-
 constexpr int NUM_PARTICLES = 100;
 
 constexpr unsigned int SUB_STEPS = 8;
@@ -30,5 +25,6 @@ constexpr float REPULSION_STRENGTH = -2000.0f;
 // - Fix the resizing of the window
 // - Fix coordenate system
 // - Add a position variable to the container
-// - Add Links between particles
+// - Make Links between particles work
 // - Batch rendering
+// - Grid collision detection
