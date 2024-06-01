@@ -92,6 +92,9 @@ int main() {
     //particle
     ShaderProgram particleShaders("src/renderer/shaders/canvasVert.glsl", "src/renderer/shaders/particleFrag.glsl");
 
+	//container
+	ShaderProgram containerShaders("src/renderer/shaders/canvasVert.glsl", "src/renderer/shaders/containerFrag.glsl");
+
 	//renderer settings
     enableBlending(true);
 
@@ -104,13 +107,14 @@ int main() {
 	float fps = 1.f / delta_time;
 
     //containers
-    float container_radius = 1.0f;
     float container_width = 1.0f;
     float container_height = 1.0f;
     char* container_type = (char*)"box";
 
-	physics.setFrameRate(60.0f);
+
 	physics.setSubSteps(SUB_STEPS);
+	physics.setFrameRate(60);
+
 
     //RENDER LOOP
     while (!glfwWindowShouldClose(window))
@@ -145,24 +149,24 @@ int main() {
 		//cursor
         drawCursor(canvasVAO, canvasEBO, cursorShaders, cursor_pos, CURSOR_RADIUS, left_clicked, right_clicked, frame_start, g_screenWidth, g_screenHeight);
 
+        //container
+        drawContainer(canvasVAO, canvasEBO, containerShaders, container_width, container_height, container_type, g_screenWidth, g_screenHeight);
+
 		//Interface
 		interface.BeginFrame();
         {
-
-
             ImGui::Begin("Performance:");
             ImGui::Text("Frame time: %d ms", ms);
 			ImGui::Text("FPS: %.0f", fps);
+			ImGui::Text("Simulation Time: %.2f", physics.getTime());
             ImGui::Text("Ammount of objects: %d", physics.getVerletObjects().size());
             ImGui::End();
-
 
 			ImGui::Begin("Settings:");
             //size
             ImGui::SliderFloat("Particle radius", &g_radius, 0.01f, 0.1f);
 
-			ImGui::SliderFloat("Container radius", &container_radius, 0.1f, 1.0f);
-			ImGui::SliderFloat("Container width", &container_width, 0.1f, 2.0f);
+			ImGui::SliderFloat("Container width/radius", &container_width, 0.1f, 2.0f);
 			ImGui::SliderFloat("Container height", &container_height, 0.1f, 2.0f);
 			//type
             if (ImGui::Button("Box")) {
@@ -172,11 +176,13 @@ int main() {
 			if (ImGui::Button("Circle")) {
 				container_type = (char*)"circle";
             }
-            physics.setContainer(container_type, container_width, container_height, container_radius);
+            physics.setContainer(container_type, container_width, container_height, container_width);
 
 
 
             ImGui::Begin("Controls:");
+            ImGui::Text("Arrow Up: Add particle");
+			ImGui::Text("Arrow Down: Remove particle");
 			ImGui::Text("WASD: Change gravity direction");
 			ImGui::Text("R: Restore particles");
 			ImGui::Text("N: New particles");
@@ -186,6 +192,8 @@ int main() {
             ImGui::End();
         }
 		interface.EndFrame();
+
+
 
         //Check and call events and swap the buffers
         glfwSwapBuffers(window);
@@ -205,15 +213,16 @@ void processInput(GLFWwindow* window, PhysicsEngine& physics, Vec2 cursor_pos)
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         physics.setGravity(Vec2(0.0f,-GRAVITY));
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        physics.setGravity(Vec2(-GRAVITY,0.0f));
+        physics.setGravity(Vec2(GRAVITY,0.0f));
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
         physics.setGravity(Vec2(0.0f, GRAVITY));
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        physics.setGravity(Vec2(GRAVITY, 0.0f));
+        physics.setGravity(Vec2(-GRAVITY, 0.0f));
     if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS){
-		float x = (rand() % 100) / 100.0f - 0.5f;
-		float y = (rand() % 100) / 100.0f - 0.5f;
-        physics.createVerletObject(Vec2(x,y),g_radius);
+        auto& object = physics.addVerletObject(Vec2(0,0.5), g_radius);
+        const float t = physics.getTime();
+        const float angle = sin(t) + 3.14f * 0.5f;
+        physics.setObjectVelocity(object, Vec2(10.f* cos(angle), 10.f*sin(angle) ));
     }
 	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
         physics.removeVerletObject();
