@@ -47,12 +47,19 @@ void drawCursor(VAO& vao, EBO& ebo, ShaderProgram& program, Vec2& position, floa
 	GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0));
 }
 
-void drawContainer(VAO& vao, EBO& ebo, ShaderProgram& program, Vec2& position, Vec2& velocity, float& radius, int& screen_width, int& screen_height) {
+void drawContainer(VAO& vao, EBO& ebo, ShaderProgram& program, float& width, float& heigth, char* type, int& screen_width, int& screen_height) {
 	program.Use();
 	vao.Bind();
 	ebo.Bind();
 
 	program.setUniform2i("resolution", screen_width, screen_height);
+	if (type == "circle") {
+		program.setUniform1i("container", 1);
+	}
+	else {
+		program.setUniform1i("container", 0);
+	}
+	program.setUniform2f("container_size", width, heigth);
 
 	GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0));
 }
